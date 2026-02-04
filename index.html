@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Quiz</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 10px;
+}
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+h2 {
+    text-align: center;
+}
+button {
+    width: 100%;
+    padding: 10px;
+    background: #4CAF50;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button:hover {
+    background: #43a047;
+}
+.option {
+    margin: 8px 0;
+}
+.feedback {
+    margin-top: 10px;
+    font-weight: bold;
+}
+.correct { color: green; }
+.wrong { color: red; }
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container" id="startScreen">
+    <h2>School Quiz</h2>
+    <label>Student Name:</label>
+    <input type="text" id="studentName" placeholder="Enter your name">
+    <button onclick="startQuiz()">Start Quiz</button>
+</div>
+
+<div class="container" id="quizScreen" style="display:none;">
+    <h3 id="question"></h3>
+    <div id="options"></div>
+    <div id="feedback" class="feedback"></div>
+    <button onclick="nextQuestion()">Next</button>
+</div>
+
+<div class="container" id="resultScreen" style="display:none;">
+    <h2>Quiz Result</h2>
+    <p id="resultText"></p>
+</div>
+
+<script>
+const quiz = [
+    { q:"Swimming movements are also known as:", o:["Hits","Strokes","High Dive"], a:"Strokes" },
+    { q:"Racing, Jumping and Pole Vault are part of:", o:["Cricket","Judo","Track and Field Events"], a:"Track and Field Events" },
+    { q:"Acrobatic exercises are part of:", o:["Cricket","Polo","Gymnastics"], a:"Gymnastics" },
+    { q:"Football is also known as:", o:["Throwball","Kickball","Soccer"], a:"Soccer" },
+    { q:"A century in cricket refers to:", o:["99 runs","100 runs","101 runs"], a:"100 runs" },
+
+    { q:"My aunt gave birth to twins. How many children were born?", o:["2","4","6"], a:"2" },
+    { q:"Quadruplicates mean:", o:["2","3","4","5"], a:"4" },
+    { q:"How many colours make white light?", o:["6","7","8"], a:"7" },
+    { q:"How many tentacles does an octopus have?", o:["8","10","16"], a:"8" },
+    { q:"Teen age refers to:", o:["13-19 years","20-25 years","25-30 years"], a:"13-19 years" },
+    { q:"How many pairs of claws does a crab have?", o:["2","5","10"], a:"5" },
+    { q:"A batsman scored a century means:", o:["50 runs","80 runs","100 runs"], a:"100 runs" },
+    { q:"An Octogenarian is aged:", o:["60-69","70-79","80-89"], a:"80-89" },
+    { q:"Silver wedding anniversary means:", o:["10 years","25 years","50 years"], a:"25 years" },
+    { q:"How many cents are in a dollar?", o:["50","100","500"], a:"100" },
+
+    { q:"Stupa is a:", o:["Gold Ornament","Stadium","Buddhist place of worship"], a:"Buddhist place of worship" },
+    { q:"Shia and Sunni belong to:", o:["Bahai","Islam","Hinduism"], a:"Islam" },
+    { q:"Pews in a church are:", o:["Singers","Benches","Candles"], a:"Benches" },
+    { q:"Roman Catholics and Protestants follow:", o:["Confucianism","Christianity","Bahai"], a:"Christianity" },
+    { q:"Ancestor worship in Japan is called:", o:["Shintoism","Buddhism","Zoroastrianism"], a:"Shintoism" },
+    { q:"Bar Mitzvah belongs to:", o:["Hinduism","Judaism","Buddhism"], a:"Judaism" },
+    { q:"Religion believing Atman in all beings:", o:["Hinduism","Islam","Shintoism"], a:"Hinduism" },
+    { q:"Followers of Zoroastrianism in India are:", o:["Jains","Parsis","Buddhists"], a:"Parsis" },
+    { q:"Maximum Jews live in:", o:["Nepal","Pakistan","Israel"], a:"Israel" },
+    { q:"Samyak Darshan, Gyan & Charitra belong to:", o:["Jainism","Buddhism","Judaism"], a:"Jainism" },
+
+    { q:"Girl’s mother is only daughter of my mother-in-law. Girl is:", o:["Cousin","Daughter","Sister"], a:"Daughter" },
+    { q:"Shiela is related to Verma family as:", o:["Daughter","Daughter-in-law","Mother-in-law"], a:"Daughter-in-law" },
+    { q:"Only son of my sister is my:", o:["Son","Nephew","Niece"], a:"Nephew" }
+];
+
+let index = 0, score = 0, name = "";
+
+function startQuiz(){
+    name = document.getElementById("studentName").value.trim();
+    if(name===""){ alert("Please enter name"); return; }
+    document.getElementById("startScreen").style.display="none";
+    document.getElementById("quizScreen").style.display="block";
+    loadQuestion();
+}
+
+function loadQuestion(){
+    document.getElementById("feedback").innerHTML="";
+    const q = quiz[index];
+    document.getElementById("question").innerText = `Q${index+1}. ${q.q}`;
+    const optDiv = document.getElementById("options");
+    optDiv.innerHTML="";
+    q.o.forEach(opt=>{
+        optDiv.innerHTML += `
+        <div class="option">
+            <input type="radio" name="opt" value="${opt}"> ${opt}
+        </div>`;
+    });
+}
+
+function nextQuestion(){
+    const selected = document.querySelector('input[name="opt"]:checked');
+    if(!selected){ alert("Select an option"); return; }
+
+    const answer = quiz[index].a;
+    if(selected.value === answer){
+        score++;
+        document.getElementById("feedback").innerHTML =
+            "<span class='correct'>Correct ✔</span>";
+    } else {
+        document.getElementById("feedback").innerHTML =
+            `<span class='wrong'>Wrong ✘</span><br>Correct Answer: <b>${answer}</b>`;
+    }
+
+    index++;
+    if(index < quiz.length){
+        setTimeout(loadQuestion, 1000);
+    } else {
+        setTimeout(showResult, 1000);
+    }
+}
+
+function showResult(){
+    document.getElementById("quizScreen").style.display="none";
+    document.getElementById("resultScreen").style.display="block";
+    document.getElementById("resultText").innerHTML =
+        `<b>Name:</b> ${name}<br><b>Marks Scored:</b> ${score} / ${quiz.length}`;
+}
+</script>
+
+</body>
+</html>
